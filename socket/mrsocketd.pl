@@ -44,8 +44,28 @@ while ( my $connection = $listen_socket->accept ) {
 }
 
 sub interact{
-	my $handle = shift;
+	my $session = shift;
 	Thread->self->detach;
-	print "Accepted a connection\n";
-	print $handle "Hello\n";
+	my $peer = gethostbyaddr($session->peeraddr,AF_INET) || $session->peerhost;
+	my $port = $session->peerport;
+	warn "Connection from [$peer,$port]\n";
+
+	print $session "> ";
+
+	while ( <$session> ) {
+		chomp;
+		if (m/PASSWD/xm){
+			print $session get_passwd();
+		}
+		print $session "\n> ";
+	}
+
+	warn "Connection from [$peer,$port] finished \n";
+	close $session;
 }
+
+sub get_passwd { 
+	return `cat /etc/passwd`;
+}
+
+
