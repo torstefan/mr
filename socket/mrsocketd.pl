@@ -67,5 +67,3 @@ sub interact{
 sub get_passwd { 
 	return `cat /etc/passwd`;
 }
-
-
